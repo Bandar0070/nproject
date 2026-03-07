@@ -20,40 +20,55 @@ mongoose.connect(dbURI)
     .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // 2. الموديلات (Models)
+
+// --- تعريف القوائم الثابتة ---
 const departmentsList = ['ER', 'ICU', 'Ward', 'Surgery', 'OBGYN', 'Pediatrics', 'OPD'];
 
-const StaffAction = mongoose.model('StaffAction', new mongoose.Schema({
+// --- تعريف الموديلات (بنمط الحماية من التكرار) ---
+
+const DevAdvice = mongoose.models.DevAdvice || mongoose.model('DevAdvice', new mongoose.Schema({
+    developerName: String,
+    isHelpful: String,
+    role: String,
+    advice: String,
+    ip: String,
+    location: String,
+    userAgent: String,
+    createdAt: { type: Date, default: Date.now }
+}));
+
+const StaffAction = mongoose.models.StaffAction || mongoose.model('StaffAction', new mongoose.Schema({
     type: { type: String, enum: ['Patient', 'DAMA', 'Admission', 'Nursing'] },
     department: { type: String, enum: departmentsList },
     createdAt: { type: Date, default: Date.now }
 }));
 
-const Patient = mongoose.model('Patient', new mongoose.Schema({
+const Patient = mongoose.models.Patient || mongoose.model('Patient', new mongoose.Schema({
     name: String,
     financialType: { type: String, enum: ['Free', 'Payment', 'Insurance'] },
     companyName: { type: String, default: '' },
     createdAt: { type: Date, default: Date.now }
 }));
 
-const Approval = mongoose.model('Approval', new mongoose.Schema({
+const Approval = mongoose.models.Approval || mongoose.model('Approval', new mongoose.Schema({
     parentCompany: String,
     subCompany: String,
     count: Number,
     amount: Number,
-    isClaimed: { type: Boolean, default: false }, 
+    isClaimed: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 }));
 
-const Survey = mongoose.model('Survey', new mongoose.Schema({
-    nurseRespect: { type: Number, min: 1, max: 4 },    
-    nurseListen: { type: Number, min: 1, max: 4 },    
-    docRespect: { type: Number, min: 1, max: 4 },      
-    docListen: { type: Number, min: 1, max: 4 },        
-    cleanliness: { type: Number, min: 1, max: 4 },    
-    quietness: { type: Number, min: 1, max: 4 },        
-    staffHelp: { type: Number, min: 1, max: 4 },        
-    medExplain: { type: Number, min: 1, max: 4 },       
-    dischargeInfo: { type: Number, min: 1, max: 4 },  
+const Survey = mongoose.models.Survey || mongoose.model('Survey', new mongoose.Schema({
+    nurseRespect: { type: Number, min: 1, max: 4 },
+    nurseListen: { type: Number, min: 1, max: 4 },
+    docRespect: { type: Number, min: 1, max: 4 },
+    docListen: { type: Number, min: 1, max: 4 },
+    cleanliness: { type: Number, min: 1, max: 4 },
+    quietness: { type: Number, min: 1, max: 4 },
+    staffHelp: { type: Number, min: 1, max: 4 },
+    medExplain: { type: Number, min: 1, max: 4 },
+    dischargeInfo: { type: Number, min: 1, max: 4 },
     overallRating: { type: Number, min: 0, max: 10 },
     patientComments: { type: String, default: '' },
     createdAt: { type: Date, default: Date.now }
