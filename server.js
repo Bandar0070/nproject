@@ -20,6 +20,9 @@ const DevAdvice = mongoose.models.DevAdvice || mongoose.model('DevAdvice', new m
     createdAt: { type: Date, default: Date.now }
 }));
 
+app.get('/', (req, res) => {
+  res.send('مرحباً! السيرفر يعمل بنجاح.');
+});
 // 3. المسارات
 app.get('/admin-dev', async (req, res) => {
     try {
