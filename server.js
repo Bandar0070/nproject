@@ -1,76 +1,23 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const requestIp = require('request-ip'); // أضف هذا السطر
-const geoip = require('geoip-lite');    // أضف هذا السطر
+const requestIp = require('request-ip');
+const geoip = require('geoip-lite');
 const app = express();
-// ... باقي الكود
 
-// 2. الموديلات (تعريفها أولاً)
-const DevAdvice = mongoose.models.DevAdvice || mongoose.model('DevAdvice', new mongoose.Schema({
-    developerName: String,
-    isHelpful: String,
-    role: String,
-    advice: String,
-    ip: String,
-    location: String,
-    userAgent: String,
-    createdAt: { type: Date, default: Date.now }
-}));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('مرحباً! السيرفر يعمل بنجاح.');
-});
-// 3. المسارات
-app.get('/admin-dev', async (req, res) => {
-    try {
-        // جلب البيانات والإحصائيات
-        const [tips, totalCount] = await Promise.all([
-            DevAdvice.find().sort({ createdAt: -1 }),
-            DevAdvice.countDocuments()
-        ]);
-
-        res.send(`
-            <html dir="rtl"><head>
-            <meta charset="UTF-8">
-            <style>
-                body { background: #0f172a; color: white; font-family: sans-serif; padding: 20px; }
-                .stats-container { display: flex; gap: 20px; margin-bottom: 30px; }
-                .stat-card { background: #1e293b; padding: 20px; border-radius: 15px; border: 1px solid #334155; flex: 1; text-align: center; }
-                .stat-card h2 { margin: 0; color: #38bdf8; font-size: 2em; }
-                table { width: 100%; border-collapse: collapse; background: #1e293b; border-radius: 10px; overflow: hidden; }
-                th { background: #334155; padding: 15px; text-align: right; }
-                td { padding: 12px; border-bottom: 1px solid #334155; }
-            </style>
-            </head><body>
-                <h1>🚀 لوحة تحكم المطورين</h1>
-                <div class="stats-container">
-                    <div class="stat-card"><h2>${totalCount}</h2><p>إجمالي النصائح</p></div>
-                </div>
-                <table>
-                    <thead><tr><th>المطور</th><th>النصيحة</th><th>IP</th><th>التاريخ</th></tr></thead>
-                    <tbody>
-                        ${tips.map(t => `<tr>
-                            <td>${t.developerName || 'غير معروف'}</td>
-                            <td>${t.advice}</td>
-                            <td>${t.ip}</td>
-                            <td>${new Date(t.createdAt).toLocaleDateString('ar-SA')}</td>
-                        </tr>`).join('')}
-                    </tbody>
-                </table>
-            </body></html>
-        `);
-    } catch (err) {
-        res.status(500).send("خطأ في التحميل: " + err.message);
-    }
-});
-
+// 1. الاتصال بقاعدة البيانات
 const dbURI = process.env.MONGO_URI;
-
 if (!dbURI) {
     console.error("❌ خطأ: لم يتم العثور على MONGO_URI في ملف .env!");
-    process.exit(1); // إيقاف السيرفر فوراً لأن الاتصال غير آمن
+    process.exit(1);
 }
+
+mongoose.connect(dbURI)
+    .then(() => console.log('✅ Connected to MongoDB'))
+    .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // 2. الموديلات (Models)
 const departmentsList = ['ER', 'ICU', 'Ward', 'Surgery', 'OBGYN', 'Pediatrics', 'OPD'];
