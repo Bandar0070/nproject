@@ -1,12 +1,10 @@
-// 1. الاستدعاءات
-require('dotenv').config(); // هذا السطر يجب أن يكون رقم 1
+require('dotenv').config();
 const express = require('express');
-// ... باقي الكود
 const mongoose = require('mongoose');
+const requestIp = require('request-ip'); // أضف هذا السطر
+const geoip = require('geoip-lite');    // أضف هذا السطر
 const app = express();
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// ... باقي الكود
 
 // 2. الموديلات (تعريفها أولاً)
 const DevAdvice = mongoose.models.DevAdvice || mongoose.model('DevAdvice', new mongoose.Schema({
