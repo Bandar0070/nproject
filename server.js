@@ -411,5 +411,12 @@ app.post('/api/add-patient', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.redirect('/dashboard'));
+const URL = "https://er-staffing-system.onrender.com"; 
+
+setInterval(() => {
+    axios.get(URL)
+        .then(() => console.log('✅ Self-ping: Server is active!'))
+        .catch(err => console.error('❌ Self-ping failed:', err.message));
+}, 840000); // 14 دقيقة (قبل أن ينام Render بـ دقيقة واحدة)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server Running on http://localhost:${PORT}`));
