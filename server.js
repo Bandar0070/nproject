@@ -9,19 +9,18 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// استبدل جزء الاتصال بهذا الكود المطور
-mongoose.connect(dbURI, {
-    serverSelectionTimeoutMS: 5000,
-    family: 4 // يسرع الاتصال في بعض بيئات الاستضافة مثل Render
-})
-.then(() => {
+// تعريف رابط قاعدة البيانات من ملف البيئة
+const dbURI = process.env.MONGO_URI; 
+
+mongoose.connect(dbURI)
+  .then(() => {
     console.log('✅ Connected to MongoDB Successfully!');
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-        console.log(`🚀 Server is LIVE on port ${PORT}`);
+      console.log(`🚀 Server is LIVE on port ${PORT}`);
     });
-})
-.catch(err => console.error('❌ MongoDB Connection Error:', err));
+  })
+  .catch(err => console.error('❌ MongoDB Connection Error:', err));
 // 2. الموديلات (Models)
 const departmentsList = ['ER', 'ICU', 'Ward', 'Surgery', 'OBGYN', 'Pediatrics', 'OPD'];
 
